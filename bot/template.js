@@ -42,6 +42,8 @@ function turn() {
       }
     }
   }
+
+  console.log('BOT: Tile Clicked: '+`x(${selectedTile.x}) y(${selectedTile.y})`)
   return selectedTile
 }
 
@@ -65,6 +67,7 @@ socket.on('connect', () => {
 // when player successfully joins a game
 socket.on('joined', (data) => {
   board = data
+  console.log(`Bot Joined game ${gameID}!`)
 
   if(board.player1 == socket.id) playerNum = 1
   if(board.player2 == socket.id) playerNum = 2
@@ -102,11 +105,13 @@ socket.on("turnCount", (data) => {
 // on message received from server
 socket.on('msg', (msg) => {
   if(msg == 'Game starting!') gameStart()
+  console.log('BOT-MESSAGE: '+msg)
 })
 
 // on any grid Changes
 socket.on('gridChanges', changes => {
   for(let change of changes) {
+    console.log('BOT: GridChange: ', change)
     let x = change.x
     let y = change.y
     if(playerNum == 2) x = board.size.x - x - 1

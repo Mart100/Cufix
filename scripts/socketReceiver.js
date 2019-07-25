@@ -37,6 +37,9 @@ module.exports = (socket, board) => {
     board.changeGridTile(tile.x, tile.y, socket.id)
     board.confirmGridChanges()
 
+    board.checkWin()
+
     board.nextTurn()
+
   })
 }

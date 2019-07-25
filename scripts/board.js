@@ -12,6 +12,7 @@ class Board {
     this.size = {x: 20, y: 11}
     this.grid = []
     this.turnTimer = 10
+    this.turnTimerInterval
     this.lastTurn = {x: 0, y:0}
     this.gridChanges = []
   }
@@ -68,11 +69,11 @@ class Board {
     // send start message
     this.broadcastMSG('Game starting!')
 
-    // send turn
-    this.socketBroadcast('turnCount', this.turnCount)
-    
     // create pixels
     this.createGrid()
+
+    // send turn
+    this.socketBroadcast('turnCount', this.turnCount)
 
     // send start message
     this.broadcastMSG('Game started!')
@@ -81,7 +82,7 @@ class Board {
     this.started = true
 
     // turn timer
-    setInterval(() => {
+    this.turnTimerInterval = setInterval(() => {
       this.turnTimer -= 1
       this.socketBroadcast('turnTimer', this.turnTimer)
       if(this.turnTimer < 0) this.nextTurn()
@@ -99,16 +100,27 @@ class Board {
     this.player1 = undefined
     this.player2 = undefined
     this.started = false
+    this.turnCount = 0
+    clearInterval(this.turnTimerInterval)
+    this.grid = []
+    console.log(`RESETTED GAME ${this.id}`)
   }
   checkWin() {
+
+    if(!this.started) return
      
+    // check player1 win
+    for(let y=0;y<this.size.y;y++) if(this.grid[this.size.x-1][y] == this.player1.socket.id) return this.win(this.player1)
+
+    // check player2 win
+    for(let y=0;y<this.size.y;y++) if(this.grid[0][y] == this.player2.socket.id) return this.win(this.player2)
   }
   win(winner) {
+
     // some vars
     let loser = this.getOpponentBySocketID(winner.socket.id)
 
-    // send all buildings
-    this.socketBroadcast('buildings', this.buildings)
+    console.log(`${winner.username} Won against ${loser.username} in game ${this.id}`)
 
     // send won / lost text
     winner.socket.emit('msg', 'You won!')
@@ -116,6 +128,7 @@ class Board {
 
     // reset game
     this.reset()
+
   }
   getPlayerBySocketID(id) {
     if(this.player1.socket.id == id) return this.player1

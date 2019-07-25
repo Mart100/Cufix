@@ -7,6 +7,7 @@ const app = express()
 const Board = require('./scripts/board.js')
 const utils = require('./scripts/utils.js')
 
+
 // listen on port :)
 const server = app.listen(process.env.PORT || 3000, () => {
   console.log('FITYMI is listening on port ' + server.address().port)
@@ -21,6 +22,9 @@ let boards = []
 app.use('/', express.static('client'))
 
 app.use('/:id/', express.static('client'))
+
+// start bot
+require('./bot/main.js')
 
 // on client connect 
 io.on('connection', (socket) => {

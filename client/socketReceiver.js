@@ -4,6 +4,8 @@ socket.on('msg', (data) => {
   $('#msg').fadeIn(500)
   if(msgFadingTimeout != undefined) clearInterval(msgFadingTimeout)
   if(data == 'Waiting for opponent...') return
+  if(data == 'You won!') return
+  if(data == 'You lost :(') return
   msgFadingTimeout = setTimeout(() => {
     $('#msg').html('')
     $('#msg').fadeOut(0)
@@ -76,6 +78,6 @@ let turnCount
 socket.on("turnCount", (data) => {
   turnCount = data
 
-  if((turnCount % 2) + 1 == playerNum) $('#turn').html('Your turn!<span id="turnTimeLeft"></span>')
-  if((turnCount % 2) + 1 != playerNum) $('#turn').html('Opponents turn!<span id="turnTimeLeft"></span>')
+  if((turnCount % 2) + 1 == playerNum) $('#turn').html('Your turn! <span id="turnTimeLeft"></span>')
+  if((turnCount % 2) + 1 != playerNum) $('#turn').html('Opponents turn! <span id="turnTimeLeft"></span>')
 })
