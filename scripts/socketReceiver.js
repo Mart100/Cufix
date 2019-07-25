@@ -26,8 +26,13 @@ module.exports = (socket, board) => {
     
     // check if more own neighbors
     let neighbors = utils.getNeighbors(board, tile)
-    if(neighbors[player.socket.id] < 1) return socket.emit('Not enough neighbors!')
-    if(neighbors[player.socket.id] < neighbors[opponent.socket.id]) return socket.emit('Not enough neighbors!')
+    if(neighbors[player.socket.id] < 1) return socket.emit('msg', 'Not enough neighbors!')
+    if(neighbors[player.socket.id] < neighbors[opponent.socket.id]) return socket.emit('msg', 'Not enough neighbors!')
+
+    // check if same tile as last turn
+    if(tile.x == board.lastTurn.x && tile.y == board.lastTurn.y) return socket.emit('msg', 'This tile was already changed last turn!')
+
+    board.lastTurn = {x: tile.x, y: tile.y}
 
     board.changeGridTile(tile.x, tile.y, socket.id)
     board.confirmGridChanges()

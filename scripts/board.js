@@ -11,7 +11,8 @@ class Board {
     this.started = false
     this.size = {x: 20, y: 11}
     this.grid = []
-    let turnTimer = 0
+    this.turnTimer = 10
+    this.lastTurn = {x: 0, y:0}
     this.gridChanges = []
   }
   createGrid() {
@@ -98,6 +99,9 @@ class Board {
     this.player1 = undefined
     this.player2 = undefined
     this.started = false
+  }
+  checkWin() {
+     
   }
   win(winner) {
     // some vars
