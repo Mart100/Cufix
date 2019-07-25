@@ -48,9 +48,9 @@ body {
   text-align: center;
   width: 200px;
   margin: auto;
-  margin-top: 30%;
   transform: translateY(-50%);
   padding: 20px;
+  margin-top: 20px;
   border-radius: 5px;
   cursor: pointer;
   font-size: 30px;
@@ -77,4 +77,34 @@ img {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%)
+}
+#username {
+  text-align: center;
+
+  padding: 20px;
+  border-radius: 5px;
+  font-size: 30px;
+  width: 300px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.4);
+  transition-duration: .5s;
+  border: 2px solid white;
+}
+#username-div {
+  width: 300px;
+  margin: auto;
+  margin-top: 30%;
+  transform: translateY(-50%);
+}
+#stats .username {
+  font-size: 25px;
+
+}
+#player-stats {
+  float: left;
+  padding: 20px;
+}
+#opponent-stats {
+  float: right;
+  padding: 20px;
 }

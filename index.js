@@ -26,9 +26,10 @@ app.use('/:id/', express.static('client'))
 io.on('connection', (socket) => {
   console.log('CONNECT: ', socket.id)
 
-  socket.on('findGame', (gameID2) => {
+  socket.on('findGame', (data) => {
 
     // get gameID
+    let gameID2 = data.gameID
     let gameID
     if(gameID2 != '') gameID = gameID2
     else gameID = socket.handshake.headers.referer.split('/')[3]
@@ -42,6 +43,10 @@ io.on('connection', (socket) => {
     }
     
     let board = boards[gameID]
+
+    let username = data.username
+    if(username == undefined) return socket.emit('msg', 'Please specify an username!')
+    socket.username = username
 
     let response = board.join(socket)
 

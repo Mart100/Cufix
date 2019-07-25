@@ -16,7 +16,12 @@ socket.on('gridChanges', changes => {
 
     if(playerNum == 2) x = board.size.x - x - 1
 
+    if(change.to == socket.id) playerTileCount++
+    else opponentTileCount++
+
     grid.setTile(x, change.y, change.to)
+
+    updateTileCount()
   }
 })
 
@@ -30,13 +35,20 @@ socket.on('joined', (data) => {
   if(playerNum == 1) board.opponent = board.player2
   if(playerNum == 2) board.opponent = board.player1
 
+  if(playerNum == 1) board.me = board.player1
+  if(playerNum == 2) board.me = board.player2
+
+  let usernames = {}
+  usernames[board.player1] = board.player1Username
+  usernames[board.player2] = board.player2Username
+
+  $('#player-stats .username').html(usernames[board.me])
+  $('#opponent-stats .username').html(usernames[board.opponent])
+
   console.log('joined')
 
   history.replaceState(board.id, '', `/${board.id}/`)
   grid = new Grid(board.size.x, board.size.y)
-
-  grid.setTile(0, Math.floor(board.size.y/2), socket.id)
-  grid.setTile(board.size.x-1, Math.floor(board.size.y/2), board.opponent)
 
   // calculate canvas size
   let tileSize = 100

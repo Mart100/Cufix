@@ -36,7 +36,7 @@ class Board {
 
     let player = {
       socket: socket,
-      energy: 0,
+      username: socket.username
     }
   
     if(playerNum == 1) this.player1 = player
@@ -58,7 +58,9 @@ class Board {
       id: this.id,
       size: this.size,
       player1: this.player1.socket.id,
-      player2: this.player2.socket.id
+      player2: this.player2.socket.id,
+      player1Username: this.player1.username,
+      player2Username: this.player2.username
     })
 
     // send start message
