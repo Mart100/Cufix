@@ -22,6 +22,7 @@ module.exports = {
     let players = {}
     players[board.player1.socket.id] = 0
     players[board.player2.socket.id] = 0
+    players['none'] = 0
 
 
     players[grid[X-1][Y  ]]++

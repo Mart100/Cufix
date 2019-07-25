@@ -28,8 +28,8 @@ module.exports = (socket, board) => {
     
     // check if more own neighbors
     let neighbors = utils.getNeighbors(board, tile)
-    console.log(neighbors, neighbors[opponent.socket.id],  neighbors[player.socket.id])
-    if(neighbors[opponent.socket.id] > neighbors[player.socket.id]) return socket.emit('Not enough neighbors!')
+    if(neighbors[player.socket.id] < 1) return socket.emit('Not enough neighbors!')
+    if(neighbors[player.socket.id] < neighbors[opponent.socket.id]) return socket.emit('Not enough neighbors!')
 
     board.changeGridTile(tile.x, tile.y, socket.id)
     board.confirmGridChanges()

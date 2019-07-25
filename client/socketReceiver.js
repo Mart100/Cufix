@@ -35,6 +35,9 @@ socket.on('joined', (data) => {
   history.replaceState(board.id, '', `/${board.id}/`)
   grid = new Grid(board.size.x, board.size.y)
 
+  grid.setTile(0, Math.floor(board.size.y/2), socket.id)
+  grid.setTile(board.size.x-1, Math.floor(board.size.y/2), board.opponent)
+
   // calculate canvas size
   let tileSize = 100
   let maxTileSizeX = (window.innerWidth)/board.size.x

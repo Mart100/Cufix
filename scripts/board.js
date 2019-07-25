@@ -9,7 +9,7 @@ class Board {
     this.socketReceiver = SocketReceiver
     this.turnCount = 0
     this.started = false
-    this.size = {x: 40, y: 20}
+    this.size = {x: 20, y: 11}
     this.grid = []
     this.gridChanges = []
   }
@@ -18,13 +18,12 @@ class Board {
     for(let x=0;x<this.size.x;x++) {
       this.grid[x] = []
       for(let y=0;y<this.size.y;y++) {
-        let owner = x<this.size.x/2 ? this.player1.socket.id : this.player2.socket.id
-        this.grid[x][y] = owner
+        this.grid[x][y] = 'none'
       }
     }
 
-    for(let y=0;y<this.size.y;y++) if(y%2==0) this.changeGridTile((this.size.x/2), y, this.player1.socket.id)
-    for(let y=0;y<this.size.y;y++) if(y%2==0) this.changeGridTile((this.size.x/2)-1, y, this.player2.socket.id)
+    this.changeGridTile(0, Math.floor(this.size.y/2), this.player1.socket.id)
+    this.changeGridTile(this.size.x-1, Math.floor(this.size.y/2), this.player2.socket.id)
     this.confirmGridChanges()
 
   }

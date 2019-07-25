@@ -30,8 +30,6 @@ class Grid {
       for(let y=0;y<this.height;y++) {
         this.data[x][y] = {}
         let owner = 'none'
-        if(playerNum == 1) owner = x < this.width/2 ? board.player1 : board.player2
-        if(playerNum == 2) owner = x < this.width/2 ? board.player2 : board.player1
         this.setTile(x, y, owner)
       }
     }
@@ -55,6 +53,8 @@ class Grid {
 
     if(to == socket.id) color = [0, 0, 200, 255]
     else color = [255, 0, 0, 255]
+
+    if(to == 'none') color = [100, 100, 100, 255]
 
     if(x % 2 == y%2 || y % 2 == x%2) color[2] -= 55
     if(x % 2 == y%2 || y % 2 == x%2) color[0] -= 55
