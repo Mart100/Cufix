@@ -12,10 +12,6 @@ module.exports = (socket, board) => {
     console.log('RESTART')
   })
 
-  // on ability
-  socket.on('ability', (abilityName) => {
-  })
-
   // on turn
   socket.on('turn', (tile) => {
     let playerNum = board.getPlayerNumBySocketID(socket.id)
