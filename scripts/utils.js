@@ -25,14 +25,14 @@ module.exports = {
     players['none'] = 0
 
 
-    players[grid[X-1][Y  ]]++
-    players[grid[X-1][Y-1]]++
-    players[grid[X  ][Y-1]]++
-    players[grid[X+1][Y-1]]++
-    players[grid[X+1][Y  ]]++
-    players[grid[X+1][Y+1]]++
-    players[grid[X  ][Y+1]]++
-    players[grid[X-1][Y+1]]++
+    if(grid[X-1] && grid[X-1][Y  ]) players[grid[X-1][Y  ]]++
+    if(grid[X-1] && grid[X-1][Y-1]) players[grid[X-1][Y-1]]++
+    if(grid[X  ] && grid[X  ][Y-1]) players[grid[X  ][Y-1]]++
+    if(grid[X+1] && grid[X+1][Y-1]) players[grid[X+1][Y-1]]++
+    if(grid[X+1] && grid[X+1][Y  ]) players[grid[X+1][Y  ]]++
+    if(grid[X+1] && grid[X+1][Y+1]) players[grid[X+1][Y+1]]++
+    if(grid[X  ] && grid[X  ][Y+1]) players[grid[X  ][Y+1]]++
+    if(grid[X-1] && grid[X-1][Y+1]) players[grid[X-1][Y+1]]++
 
     return players
   }

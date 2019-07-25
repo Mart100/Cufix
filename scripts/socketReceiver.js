@@ -24,6 +24,8 @@ module.exports = (socket, board) => {
 
     if((board.turnCount % 2) + 1 != playerNum) return socket.emit('msg', 'Not your turn!')
 
+    if(board.grid[tile.x] == undefined) return
+    if(board.grid[tile.x][tile.y] == undefined) return
     if(board.grid[tile.x][tile.y] == socket.id) return
     
     // check if more own neighbors
