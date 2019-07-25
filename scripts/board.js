@@ -11,6 +11,7 @@ class Board {
     this.started = false
     this.size = {x: 20, y: 11}
     this.grid = []
+    let turnTimer = 0
     this.gridChanges = []
   }
   createGrid() {
@@ -78,6 +79,18 @@ class Board {
     // start
     this.started = true
 
+    // turn timer
+    setInterval(() => {
+      this.turnTimer -= 1
+      this.socketBroadcast('turnTimer', this.turnTimer)
+      if(this.turnTimer < 0) this.nextTurn()
+    }, 1000)
+
+  }
+  nextTurn() {
+    this.turnCount++
+    this.turnTimer = 10
+    this.socketBroadcast('turnCount', this.turnCount)
   }
   reset() {
     if(this.player1 != undefined) this.player1.socket.removeAllListeners()

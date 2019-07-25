@@ -32,8 +32,6 @@ module.exports = (socket, board) => {
     board.changeGridTile(tile.x, tile.y, socket.id)
     board.confirmGridChanges()
 
-
-    board.turnCount++
-    board.socketBroadcast('turnCount', board.turnCount)
+    board.nextTurn()
   })
 }

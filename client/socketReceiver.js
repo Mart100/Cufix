@@ -25,6 +25,10 @@ socket.on('gridChanges', changes => {
   }
 })
 
+socket.on('turnTimer', timeLeft => {
+  $('#turnTimeLeft').html(timeLeft+'s..')
+})
+
 let playerNum = 0
 socket.on('joined', (data) => {
   board = data
@@ -72,6 +76,6 @@ let turnCount
 socket.on("turnCount", (data) => {
   turnCount = data
 
-  if((turnCount % 2) + 1 == playerNum) $('#turn').html('Your turn!')
-  if((turnCount % 2) + 1 != playerNum) $('#turn').html('Opponents turn!')
+  if((turnCount % 2) + 1 == playerNum) $('#turn').html('Your turn!<span id="turnTimeLeft"></span>')
+  if((turnCount % 2) + 1 != playerNum) $('#turn').html('Opponents turn!<span id="turnTimeLeft"></span>')
 })
