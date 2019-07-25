@@ -1,0 +1,125 @@
+const SocketReceiver = require('./socketReceiver.js')
+
+class Board {
+  constructor(id, settings) {
+    this.settings = settings
+    this.id = id
+    this.player1 = undefined
+    this.player2 = undefined
+    this.socketReceiver = SocketReceiver
+    this.turnCount = 0
+    this.started = false
+    this.size = {x: 40, y: 20}
+    this.grid = []
+    this.gridChanges = []
+  }
+  createGrid() {
+
+    for(let x=0;x<this.size.x;x++) {
+      this.grid[x] = []
+      for(let y=0;y<this.size.y;y++) {
+        let owner = y<this.size.y/2 ? this.player1.socket.id : this.player2.socket.id
+        this.grid[x][y] = { 'owner': owner }
+      }
+    }
+
+  }
+  join(socket) {
+    let playerNum = 0
+
+    if(this.player1 == undefined) playerNum = 1
+    else if(this.player2 == undefined) playerNum = 2
+    else return 'FULL'
+
+    let player = {
+      socket: socket,
+      energy: 0,
+    }
+  
+    if(playerNum == 1) this.player1 = player
+    if(playerNum == 2) this.player2 = player
+
+    this.socketReceiver(socket, this)
+
+    if(playerNum == 1) socket.emit('msg', 'Waiting for opponent...')
+    if(playerNum == 2) this.start()
+
+    return 'JOINED'
+
+  }
+  start() {
+    console.log(`Game ${this.id} has started!`)
+
+    // player joins
+    this.socketBroadcast('joined', {
+      id: this.id,
+      size: this.size,
+      player1: this.player1.socket.id,
+      player2: this.player2.socket.id
+    })
+
+    // send start message
+    this.broadcastMSG('Game starting!')
+    
+    // create pixels
+    this.createGrid()
+
+    // send start message
+    this.broadcastMSG('Game started!')
+
+    // start
+    this.started = true
+
+  }
+  reset() {
+    if(this.player1 != undefined) this.player1.socket.removeAllListeners()
+    if(this.player2 != undefined) this.player2.socket.removeAllListeners()
+    this.player1 = undefined
+    this.player2 = undefined
+    this.started = false
+  }
+  win(winner) {
+    // some vars
+    let loser = this.getOpponentBySocketID(winner.socket.id)
+
+    // send all buildings
+    this.socketBroadcast('buildings', this.buildings)
+
+    // send won / lost text
+    winner.socket.emit('msg', 'You won!')
+    loser.socket.emit('msg', 'You lost :(')
+
+    // reset game
+    this.reset()
+  }
+  getPlayerBySocketID(id) {
+    if(this.player1.socket.id == id) return this.player1
+    if(this.player2.socket.id == id) return this.player2
+  }
+  getPlayerNumBySocketID(id) {
+    if(this.player1.socket.id == id) return 1
+    if(this.player2.socket.id == id) return 2
+  }
+  getOpponentBySocketID(id) {
+    if(this.player1.socket.id == id) return this.player2
+    if(this.player2.socket.id == id) return this.player1
+  }
+  broadcastMSG(msg) {
+    if(this.player1 != undefined) this.player1.socket.emit('msg', msg)
+    if(this.player2 != undefined) this.player2.socket.emit('msg', msg)
+  }
+  socketBroadcast(channel, data) {
+    if(this.player1 != undefined) this.player1.socket.emit(channel, data)
+    if(this.player2 != undefined) this.player2.socket.emit(channel, data)
+  }
+  sendGridChanges(newGrid) {
+    this.socketBroadcast('gridChanges', this.gridChanges)
+    this.gridChanges = []
+  }
+  changeGridTile(x, y, what, to) {
+    this.grid[x][y][what] = to
+    this.gridChanges.push({x:x,y:y,what:what,to:to})
+  }
+}
+
+module.exports = Board
