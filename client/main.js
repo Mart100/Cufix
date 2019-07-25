@@ -1,7 +1,4 @@
 // global variables
-let energy = 0
-let abilitiesData = []
-let abilities = []
 let grid
 let board
 
@@ -16,7 +13,7 @@ $(() => {
       <canvas id="grid_canvas"></canvas>
       <div id="HUD">
         <div id="msg"></div>
-        <div id="energy">Energy: 0</div>
+        <div id="turn"></div>
       </div>
     `)
 

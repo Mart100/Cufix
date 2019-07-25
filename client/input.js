@@ -1,5 +1,4 @@
 let mousePos = {x: window.innerWidth/2, y: window.innerHeight/2}
-let mouseLocked = false
 
 function configureInputs() {
 
@@ -16,7 +15,8 @@ function configureInputs() {
     let posX = mousePos.x - ((window.innerWidth-grid.canvas.width)/2)
     let posY = mousePos.y - ((window.innerHeight-grid.canvas.height)/2)
     let tile = grid.canvasToGridPos(posX, posY)
-    if(playerNum == 1) tile.x = board.size.x - tile.x
+
+    if(playerNum == 2) tile.x = board.size.x - tile.x - 1
     socket.emit('turn', tile)
     console.log(tile)
   })

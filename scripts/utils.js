@@ -13,5 +13,26 @@ module.exports = {
       token += chars[Math.floor(Math.random()*chars.length)]
     }
     return token
+  },
+  getNeighbors(board, tile) {
+    let grid = board.grid
+    let X = tile.x
+    let Y = tile.y
+    let neighbors = []
+    let players = {}
+    players[board.player1.socket.id] = 0
+    players[board.player2.socket.id] = 0
+
+
+    players[grid[X-1][Y  ]]++
+    players[grid[X-1][Y-1]]++
+    players[grid[X  ][Y-1]]++
+    players[grid[X+1][Y-1]]++
+    players[grid[X+1][Y  ]]++
+    players[grid[X+1][Y+1]]++
+    players[grid[X  ][Y+1]]++
+    players[grid[X-1][Y+1]]++
+
+    return players
   }
 }

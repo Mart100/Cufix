@@ -32,7 +32,7 @@ class Grid {
         let owner = 'none'
         if(playerNum == 1) owner = x < this.width/2 ? board.player1 : board.player2
         if(playerNum == 2) owner = x < this.width/2 ? board.player2 : board.player1
-        this.setTile(x, y, 'owner', owner)
+        this.setTile(x, y, owner)
       }
     }
   }
@@ -47,20 +47,19 @@ class Grid {
   getTile(x, y) {
     return this.data[x][y]
   }
-  setTile(x, y, what, to) {
+  setTile(x, y, to) {
     let tile = this.data[x][y]
-    tile[what] = to
-    if(what == 'owner') {
-      let color = [0,0,0,0]
+    tile = to
 
-      if(to == socket.id) color = [0, 0, 200, 255]
-      else color = [255, 0, 0, 255]
+    let color = [0,0,0,0]
 
-      if(x % 2 == y%2 || y % 2 == x%2) color[2] -= 55
-      if(x % 2 == y%2 || y % 2 == x%2) color[0] -= 55
+    if(to == socket.id) color = [0, 0, 200, 255]
+    else color = [255, 0, 0, 255]
 
-      this.setImgData(x, y, color)
-    }
+    if(x % 2 == y%2 || y % 2 == x%2) color[2] -= 55
+    if(x % 2 == y%2 || y % 2 == x%2) color[0] -= 55
+
+    this.setImgData(x, y, color)
   }
   completeImgDataCalc() {
     this.forEveryTile((x, y, tile) => {

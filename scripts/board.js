@@ -18,10 +18,14 @@ class Board {
     for(let x=0;x<this.size.x;x++) {
       this.grid[x] = []
       for(let y=0;y<this.size.y;y++) {
-        let owner = y<this.size.y/2 ? this.player1.socket.id : this.player2.socket.id
-        this.grid[x][y] = { 'owner': owner }
+        let owner = x<this.size.x/2 ? this.player1.socket.id : this.player2.socket.id
+        this.grid[x][y] = owner
       }
     }
+
+    for(let y=0;y<this.size.y;y++) if(y%2==0) this.changeGridTile((this.size.x/2), y, this.player1.socket.id)
+    for(let y=0;y<this.size.y;y++) if(y%2==0) this.changeGridTile((this.size.x/2)-1, y, this.player2.socket.id)
+    this.confirmGridChanges()
 
   }
   join(socket) {
@@ -60,6 +64,9 @@ class Board {
 
     // send start message
     this.broadcastMSG('Game starting!')
+
+    // send turn
+    this.socketBroadcast('turnCount', this.turnCount)
     
     // create pixels
     this.createGrid()
@@ -112,13 +119,13 @@ class Board {
     if(this.player1 != undefined) this.player1.socket.emit(channel, data)
     if(this.player2 != undefined) this.player2.socket.emit(channel, data)
   }
-  sendGridChanges(newGrid) {
+  confirmGridChanges(newGrid) {
     this.socketBroadcast('gridChanges', this.gridChanges)
     this.gridChanges = []
   }
-  changeGridTile(x, y, what, to) {
-    this.grid[x][y][what] = to
-    this.gridChanges.push({x:x,y:y,what:what,to:to})
+  changeGridTile(x, y, to) {
+    this.grid[x][y] = to
+    this.gridChanges.push({x:x,y:y,to:to})
   }
 }
 

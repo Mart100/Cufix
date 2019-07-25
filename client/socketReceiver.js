@@ -14,20 +14,10 @@ socket.on('gridChanges', changes => {
   for(let change of changes) {
     let x = change.x
 
-    if(change.to != socket.id) {
-      if(playerNum == 1) x+=1
-      if(playerNum == 2) x-=1
-    }
+    if(playerNum == 2) x = board.size.x - x - 1
 
-    if(playerNum == 1) x = board.size.x - x
-
-    grid.setTile(x, change.y, change.what, change.to)
+    grid.setTile(x, change.y, change.to)
   }
-})
-
-socket.on('energy', (data) => {
-  energy = Math.round(data)
-  $('#energy').html('Energy: '+energy)
 })
 
 let playerNum = 0
@@ -61,10 +51,12 @@ socket.on('joined', (data) => {
 
   startDrawing()
   configureInputs()
-  setInterval(() => { tick() }, 10)
 })
 
-let turn
-socket.on("turn", (who) => {
-  turn = who
+let turnCount
+socket.on("turnCount", (data) => {
+  turnCount = data
+
+  if((turnCount % 2) + 1 == playerNum) $('#turn').html('Your turn!')
+  if((turnCount % 2) + 1 != playerNum) $('#turn').html('Opponents turn!')
 })
