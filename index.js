@@ -23,9 +23,6 @@ app.use('/', express.static('client'))
 
 app.use('/:id/', express.static('client'))
 
-// start bot
-require('./bot/main.js')
-
 // on client connect 
 io.on('connection', (socket) => {
   console.log('CONNECT: ', socket.id)

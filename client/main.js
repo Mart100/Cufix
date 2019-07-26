@@ -72,3 +72,7 @@ function updateTileCount() {
   $('#player-stats .tileCount').html(playerTileCount)
   $('#opponent-stats .tileCount').html(opponentTileCount)
 }
+
+function spectate() {
+  
+}

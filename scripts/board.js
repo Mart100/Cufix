@@ -1,4 +1,5 @@
 const SocketReceiver = require('./socketReceiver.js')
+const utils = require('./utils.js')
 
 class Board {
   constructor(id, settings) {

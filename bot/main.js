@@ -2,6 +2,7 @@ const Bot = require('./bot.js')
 
 let bot = new Bot('Mork-Bot')
 bot.serverAdress = 'http://localhost:3000'
+bot.logging = false
 
 bot.connectSocket()
 

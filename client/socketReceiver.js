@@ -6,6 +6,14 @@ socket.on('msg', (data) => {
   if(data == 'Waiting for opponent...') return
   if(data == 'You won!') return
   if(data == 'You lost :(') return
+  console.log(data)
+  if(data == 'This board is already full!') {
+    $('#msg').css('pointer-events', 'auto')
+    data += '<br><button id="spectate">Click here to spectate instead!</button>'
+    $('#msg').html(data)
+    $('#spectate').on('click', () => { spectate() })
+    return
+  }
   msgFadingTimeout = setTimeout(() => {
     $('#msg').html('')
     $('#msg').fadeOut(0)
