@@ -6,6 +6,9 @@ let board
 let playerNum
 let turnCount = 0
 let grid = []
+let socket
+
+establishConnection()
 
 
 // the turn function gets ran everytime its time for your turn. Return a tile object with x and y to click that tile
@@ -52,79 +55,6 @@ function gameStart() {
 
 }
 
-
-// create socket client to serverAdress
-const socket = require('socket.io-client')(serverAdress)
-
-// wait on socket connect
-socket.on('connect', () => {
-  console.log('Bot Socket connected!')
-
-  // search for game
-  socket.emit('findGame', {gameID: gameID, username: username })
-})
-
-// when player successfully joins a game
-socket.on('joined', (data) => {
-  board = data
-  console.log(`Bot Joined game ${gameID}!`)
-
-  if(board.player1 == socket.id) playerNum = 1
-  if(board.player2 == socket.id) playerNum = 2
-
-  if(playerNum == 1) board.opponent = board.player2
-  if(playerNum == 2) board.opponent = board.player1
-
-  if(playerNum == 1) board.me = board.player1
-  if(playerNum == 2) board.me = board.player2
-
-  let usernames = {}
-  usernames[board.player1] = board.player1Username
-  usernames[board.player2] = board.player2Username
-
-  createEmptyGrid()
-})
-
-
-// on turnCount update from server
-socket.on("turnCount", (data) => {
-  turnCount = data
-
-  // your turn
-  if((turnCount % 2) + 1 == playerNum) {
-    let tile = turn()
-    socket.emit('turn', tile)
-  }
-
-  // opponents turn
-  if((turnCount % 2) + 1 != playerNum) {
-
-  }
-})
-
-// on message received from server
-socket.on('msg', (msg) => {
-  if(msg == 'Game starting!') gameStart()
-  console.log('BOT-MESSAGE: '+msg)
-})
-
-// on any grid Changes
-socket.on('gridChanges', changes => {
-  for(let change of changes) {
-    console.log('BOT: GridChange: ', change)
-    let x = change.x
-    let y = change.y
-    if(playerNum == 2) x = board.size.x - x - 1
-
-    let to
-    if(change.to == socket.id) to = 1
-    if(change.to == board.opponent) to = 2
-    if(change.to == 'none') to = 0
-
-    grid[x][change.y] = to
-  }
-})
-
 // creates an empty grid
 function createEmptyGrid() {
   for(let x=0;x<board.size.x;x++) {
@@ -155,4 +85,86 @@ function getNeighbors(tile) {
   if(grid[X-1]!=u && grid[X-1][Y+1]!=u) neighborTypes[grid[X-1][Y+1]]++
 
   return neighborTypes
+}
+
+// create socket client to serverAdress
+function establishConnection() {
+  console.log('BOT: Attempting to establish connection')
+  socket = require('socket.io-client')(serverAdress)
+  socketHandler()
+}
+
+function socketHandler() {
+
+  // wait on socket connect
+  socket.on('connect', () => {
+    console.log('Bot Socket connected!')
+
+    // search for game
+    socket.emit('findGame', {gameID: gameID, username: username })
+  })
+
+  // when player successfully joins a game
+  socket.on('joined', (data) => {
+    board = data
+
+    console.log(`Bot Joined game ${gameID}!`)
+
+    if(board.player1 == socket.id) playerNum = 1
+    if(board.player2 == socket.id) playerNum = 2
+
+    if(playerNum == 1) board.opponent = board.player2
+    if(playerNum == 2) board.opponent = board.player1
+
+    if(playerNum == 1) board.me = board.player1
+    if(playerNum == 2) board.me = board.player2
+
+    let usernames = {}
+    usernames[board.player1] = board.player1Username
+    usernames[board.player2] = board.player2Username
+
+    createEmptyGrid()
+  })
+
+
+  // on turnCount update from server
+  socket.on("turnCount", (data) => {
+    turnCount = data
+
+    // your turn
+    if((turnCount % 2) + 1 == playerNum) {
+      let tile = turn()
+      socket.emit('turn', tile)
+    }
+
+    // opponents turn
+    if((turnCount % 2) + 1 != playerNum) {
+
+    }
+  })
+
+  // on message received from server
+  socket.on('msg', (msg) => {
+    if(msg == 'Game starting!') gameStart()
+    if(msg == 'You won!' || msg == 'You lost! :(' || msg == 'Game stopped!') setTimeout(establishConnection, 1000)
+    console.log('BOT-MESSAGE: '+msg)
+  })
+
+  // on any grid Changes
+  socket.on('gridChanges', changes => {
+    for(let change of changes) {
+      console.log('BOT: GridChange: ', change)
+
+      let x = change.x
+      let y = change.y
+      if(playerNum == 2) x = board.size.x - x - 1
+
+      let to
+      if(change.to == socket.id) to = 1
+      if(change.to == board.opponent) to = 2
+      if(change.to == 'none') to = 0
+
+      grid[x][change.y] = to
+    }
+  })
 }

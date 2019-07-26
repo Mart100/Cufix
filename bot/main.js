@@ -1,15 +1,16 @@
-// some global variables
-const gameID = 'botRoom'
-const username = 'Mork-Bot'
-let serverAdress = 'http://localhost:3000'
-let board
-let playerNum
-let turnCount = 0
-let grid = []
+const Bot = require('./bot.js')
+
+let bot = new Bot('Mork-Bot')
+bot.serverAdress = 'http://localhost:3000'
+
+bot.connectSocket()
 
 
-// the turn function gets ran everytime its time for your turn. Return a tile object with x and y to click that tile
-function turn() {
+bot.on('connect', () => {
+  bot.join('botRoom')
+})
+
+bot.on('turn', (grid) => {
   let selectedTile = {x: 0, y: 0}
 
   // loop trough grid
@@ -28,7 +29,7 @@ function turn() {
       if(tile == 0) {
 
         // get type of neighbors of tile
-        let neighborTypes = getNeighbors(tilePos)
+        let neighborTypes = bot.getTileNeighbors(grid, tilePos)
 
         // if has more enemys then friendly --continue
         if(neighborTypes[2] > neighborTypes[1]) continue
@@ -43,111 +44,4 @@ function turn() {
     }
   }
   return selectedTile
-}
-
-// do whatever you want in this
-function gameStart() {
-
-}
-
-
-// create socket client to serverAdress
-const socket = require('socket.io-client')(serverAdress)
-
-// wait on socket connect
-socket.on('connect', () => {
-  console.log('Bot Socket connected!')
-
-  // search for game
-  socket.emit('findGame', {gameID: gameID, username: username })
 })
-
-// when player successfully joins a game
-socket.on('joined', (data) => {
-  board = data
-
-  if(board.player1 == socket.id) playerNum = 1
-  if(board.player2 == socket.id) playerNum = 2
-
-  if(playerNum == 1) board.opponent = board.player2
-  if(playerNum == 2) board.opponent = board.player1
-
-  if(playerNum == 1) board.me = board.player1
-  if(playerNum == 2) board.me = board.player2
-
-  let usernames = {}
-  usernames[board.player1] = board.player1Username
-  usernames[board.player2] = board.player2Username
-
-  createEmptyGrid()
-})
-
-
-// on turnCount update from server
-socket.on("turnCount", (data) => {
-  turnCount = data
-
-  // your turn
-  if((turnCount % 2) + 1 == playerNum) {
-    let tile = turn()
-    socket.emit('turn', tile)
-  }
-
-  // opponents turn
-  if((turnCount % 2) + 1 != playerNum) {
-
-  }
-})
-
-// on message received from server
-socket.on('msg', (msg) => {
-  if(msg == 'Game starting!') gameStart()
-})
-
-// on any grid Changes
-socket.on('gridChanges', changes => {
-  for(let change of changes) {
-    let x = change.x
-    let y = change.y
-    if(playerNum == 2) x = board.size.x - x - 1
-
-    let to
-    if(change.to == socket.id) to = 1
-    if(change.to == board.opponent) to = 2
-    if(change.to == 'none') to = 0
-
-    grid[x][change.y] = to
-  }
-})
-
-// creates an empty grid
-function createEmptyGrid() {
-  for(let x=0;x<board.size.x;x++) {
-    grid[x] = []
-    for(let y=0;y<board.size.y;y++) {
-      grid[x][y] = 0
-    }
-  }
-}
-
-// check neighboring tiles of a tile in the grid
-function getNeighbors(tile) {
-  let X = Number(tile.x)
-  let Y = Number(tile.y)
-  let neighborTypes = {}
-  neighborTypes[0] = 0
-  neighborTypes[1] = 0
-  neighborTypes[2] = 0
-
-  let u = undefined
-  if(grid[X-1]!=u && grid[X-1][Y  ]!=u) neighborTypes[grid[X-1][Y  ]]++
-  if(grid[X-1]!=u && grid[X-1][Y-1]!=u) neighborTypes[grid[X-1][Y-1]]++
-  if(grid[X  ]!=u && grid[X  ][Y-1]!=u) neighborTypes[grid[X  ][Y-1]]++
-  if(grid[X+1]!=u && grid[X+1][Y-1]!=u) neighborTypes[grid[X+1][Y-1]]++
-  if(grid[X+1]!=u && grid[X+1][Y  ]!=u) neighborTypes[grid[X+1][Y  ]]++
-  if(grid[X  ]!=u && grid[X  ][Y+1]!=u) neighborTypes[grid[X  ][Y+1]]++
-  if(grid[X+1]!=u && grid[X+1][Y+1]!=u) neighborTypes[grid[X+1][Y+1]]++
-  if(grid[X-1]!=u && grid[X-1][Y+1]!=u) neighborTypes[grid[X-1][Y+1]]++
-
-  return neighborTypes
-}
