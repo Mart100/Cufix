@@ -45,7 +45,7 @@ $(() => {
     <div id="play">Click to play</div>
     <br><br>
     <center>
-    <a href="https://martve.me">Made by: Marto_0</a>
+    <a href="https://martvenck.com">Made by: Marto_0</a>
     <br><br>
     <a href="">Join us on discord
     <br><br>
